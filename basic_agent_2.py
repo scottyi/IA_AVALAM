@@ -20,7 +20,7 @@ class Agent(avalam.Agent, minimax.Game):
         self.name = name # Le nom de l'agent
         self.player = avalam.PLAYER2
 
-    """The successors function must return (or yield) a list of
+    """The successors function must return (or yield) a list of”
         pairs (a, s) in which a is the action played to reach the
         state s; s is the new state, i.e. a triplet (b, p, st) where
         b is the new board after the action a has been played,
@@ -43,7 +43,7 @@ class Agent(avalam.Agent, minimax.Game):
     def cutoff(self, state, depth):
 
       board, player, step_number = state
-      return board.is_finished() or depth >= 2
+      return board.is_finished() or depth == 2
 
     """The evaluate function must return an integer value
         representing the utility function of the board.

@@ -18,7 +18,7 @@ class Agent(avalam.Agent, minimax.Game):
 
     def __init__(self, name="Agent"):
         self.name = name # Le nom de l'agent
-        self.player = avalam.PLAYER2
+        self.player = avalam.PLAYER1
 
     """The successors function must return (or yield) a list of
         pairs (a, s) in which a is the action played to reach the
@@ -43,7 +43,7 @@ class Agent(avalam.Agent, minimax.Game):
     def cutoff(self, state, depth):
 
       board, player, step_number = state
-      return board.is_finished() or depth >= 2
+      return board.is_finished() or depth == 2
 
     """The evaluate function must return an integer value
         representing the utility function of the board.
@@ -51,7 +51,7 @@ class Agent(avalam.Agent, minimax.Game):
     def evaluate(self, state):
          #basic agent version 1 : return board.get_score()
          board, player,step_number = state
-         val = board.get_score(self.player)
+         val = board.get_score()
          if val == 0:return 0
          if val < 0:return -1
          return 1
@@ -64,7 +64,7 @@ class Agent(avalam.Agent, minimax.Game):
         will perform.
         """
         self.time_left = time_left
-        newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
+        newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER1))
         state = (newBoard, player, step)
         return minimax.search(state, self)
 
