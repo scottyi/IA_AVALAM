@@ -200,6 +200,12 @@ class Board:
                         score += 1
         return score
 
+    def get_height(self, tower):
+        #get_height calcule la hauteur d'une tour
+        height = 0
+        for e in filter(lambda e: e != [0, 0], tower[1:]):
+            height += 1
+        return height
 
 def load_percepts(filename):
     """Load percepts from a CSV file."""

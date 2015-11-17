@@ -84,54 +84,80 @@ class Agent(avalam.Agent, minimax.Game):
     def evaluate(self, state):
 
      board, player,step_number = state
-     score = board.get_score()
-     old_score = score
-     # Do not evaluate this before step 2 because it won't happen
+     score = board.get_score() # On récupère le score renvoyé par  board.get_score()
+     # Ne pas evaluer le score avant d'avoir fait 2 pas
      if self.step < 2:
-            return score
-      # If We have non moveable complete tower with player's color
-      # Increment score
-     for i,j,tower in board.get_towers():
-            if not board.is_tower_movable(i,j):
-                h = board.get_height(board.m[i][j])
-                if tower[4][1] == 1:
-                    score+=8
-                elif tower[4][1] == -1: #Check if oponent has full towers
-                    score-=8
-                # Check Right
-                elif h == 3:
-                    #test if the tower is not surrounded by any chip
-                    if tower[h][1] == 1 and\
-                    self.check_right(board,i,j) == None and \
-                    self.check_left(board, i, j) == None and \
-                    self.check_up(board, i, j) == None and \
-                    self.check_down(board, i, j) == None:
-                        score+=h
-                    else: #Check if a near chip is from oponent because we can suppose that he will counter this move
-                        left = self.left(board, i, j)
-                        right = self.right(board, i,j)
-                        up = self.up(board, i,j)
-                        down = self.down(board, i,j)
-                        if (left != None and board.get_height(left) == 1 and left[1][1] == -1) or \
-                        (right != None and board.get_height(right) == 1 and right[1][1] == -1) or\
-                        (up != None and board.get_height(up) == 1 and up[1][1] == -1) or\
-                        (down != None and board.get_height(down) == 1 and down[1][1] == -1):
-                            score-=h
+        return score
 
-            else: #Tower is movable
-                if tower[4][1] == 1: #Tower can be reversed
-                    if tower[1][0] == 1: #Reversing tower will give us points and is the only possible move
-                        score+=4
-                    elif tower[1][0] == -1: #Reversing the tower will give points to the opponent
-                        score-=4
+     for i, j, tower in board.get_towers():
+         #if the tower CAN'T move
+         if not board.is_tower_movable(i,j) :
+            if tower > 0:
+                score += (5*2)
+            #Check if oponent has full towers
+            elif tower < 0:
+                score -= (5*2)
+         else : #if tower CAN move
+             if tower == 4 : #this tower can be taken
+                 #Check if a near chip is from oponent because we can suppose that he will counter this move
+                 left = self.left(board, i, j)
+                 right = self.right(board, i,j)
+                 up = self.up(board, i,j)
+                 down = self.down(board, i,j)
+                 if (left != None and left == 1 and left < 0) or \
+                        (right != None and right == 1 and right < 0) or\
+                        (up != None and up == 1 and up < 0) or\
+                        (down != None and down == 1 and down < 0):
+                            score-=tower
+                 else :
+                    score+=tower
+             if tower == 3 : #this tower can be taken if openent chip has height of 2
+                 #Check if a near chip is from oponent because we can suppose that he will counter this move
+                 left = self.left(board, i, j)
+                 right = self.right(board, i,j)
+                 up = self.up(board, i,j)
+                 down = self.down(board, i,j)
+                 if (left != None and left == 2 and left < 0) or \
+                        (right != None and right == 2 and right < 0) or\
+                        (up != None and up == 2 and up < 0) or\
+                        (down != None and down == 2 and down < 0):
+                            score-=tower
+                 else :
+                    score+=tower
+             if tower == 2 : #this tower can be taken if openent chip has height of 3
+                 #Check if a near chip is from oponent because we can suppose that he will counter this move
+                 left = self.left(board, i, j)
+                 right = self.right(board, i,j)
+                 up = self.up(board, i,j)
+                 down = self.down(board, i,j)
+                 if (left != None and left == 3 and left < 0) or \
+                        (right != None and right == 3 and right < 0) or\
+                        (up != None and up == 3 and up < 0) or\
+                        (down != None and down == 3 and down < 0):
+                            score-=tower
+                 else :
+                    score+=tower
+             if tower == 1 : #this tower can be taken if openent chip has height of 4
+                 #Check if a near chip is from oponent because we can suppose that he will counter this move
+                 left = self.left(board, i, j)
+                 right = self.right(board, i,j)
+                 up = self.up(board, i,j)
+                 down = self.down(board, i,j)
+                 if (left != None and left == 4 and left < 0) or \
+                        (right != None and right == 4 and right < 0) or\
+                        (up != None and up == 4 and up < 0) or\
+                        (down != None and down == 4 and down < 0):
+                            score-=tower
+                 else :
+                    score+=tower
      return score
 
 
 
     def check_right(self,board, i,j):
-        """ Checks whether the right cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
+        """ Vérifie si la cellule à droite est  vide ou pas
+            Retourne None si il n'y a pas des pions sur cette cellule ou si on sort du board
+            Retourne True s'il y a de pion sur cette cellule qui se trouve à droite
         """
         if j+1 < board.columns:
             if board.get_height(board.m[i][j+1]) == 0:
@@ -142,8 +168,8 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
     def left(self, board, i, j):
-        """ Get the left tile
-            Return None if no tile
+        """ Prendre le pion qui se trouve à gauche
+            Retourne None s'il n'y a pas de pion
         """
         if j+1 < board.columns:
             return board.m[i][j+1]
@@ -151,9 +177,9 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
     def check_left(self, board,i,j):
-        """ Checks whether the left cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
+        """ Vérifie si la cellule à gauche est vide ou pas
+            Retourne None si il n'y a pas de pions sur cette cellule ou si on sort du board
+            Retourne True s'il y a de pion sur cette cellule qui se trouve à gauche
         """
         if j > 0:
             if board.get_height(board.m[i][j-1]) == 0:
@@ -164,8 +190,8 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
     def right(self, board, i, j):
-        """ Get the right  tile
-            Return None if no tile
+        """ Prendre le pion qui se trouve à droite
+            Retourne None s'il n'y a pas de pion
         """
         if j > 0:
             return board.m[i][j-1]
@@ -174,9 +200,9 @@ class Agent(avalam.Agent, minimax.Game):
 
 
     def check_up(self, board,i, j):
-        """ Checks whether the upper cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
+        """ Verifie si la cellule devant est vide ou pas.
+            Retourne None s'il n'y a pas de pion sur cette cellule ou si on sort du board
+            Retourne True s'il y a de pion sur cette cellule qui se trouve devant
         """
         if i > 0:
             if board.get_height(board.m[i-1][j]) == 0:
@@ -187,8 +213,8 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
     def up(self, board, i, j):
-        """ Get the up tile
-            Return None if no tile
+        """ Prendre le pion  qui se trouve devant.
+            Retourne None s'il n'y a pas de pion
         """
         if i > 0:
             return board.m[i-1][j]
@@ -196,9 +222,9 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
     def check_down(self, board,i, j):
-        """ Checks whether the down cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
+        """ Verifier si la cellule derrière est vide ou pas.
+            Retourne None s'il n'y a de pion  sur cette cellule ou si sort du board
+            Retoune True s'il  y a un pion sur la cellule qui se trouve derrière
         """
         if i+1 < board.rows:
             if board.get_height(board.m[i+1][j]) == 0:
@@ -209,8 +235,8 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
     def down(self, board, i, j):
-        """ Get the down tile
-            Return None if no tile
+        """ Prendre le pion qui se trouve derrière.
+            Retourne None s'il n'y a pas de pion
         """
         if i+1 < board.rows:
             return board.m[i+1][j]
