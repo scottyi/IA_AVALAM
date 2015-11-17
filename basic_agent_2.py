@@ -61,8 +61,13 @@ class Agent(avalam.Agent, minimax.Game):
         It must return an action representing the move the player
         will perform.
         """
+        if step % 2 == 0 :
+            player = avalam.PLAYER2
+        else :
+             player = avalam.PLAYER1
+
         self.time_left = time_left
-        newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
+        newBoard = avalam.Board(board.get_percepts(player))
         state = (newBoard, player, step)
         return minimax.search(state, self)
 
