@@ -11,12 +11,11 @@ GROUPE 29
 '''
 
 import avalam
-from avalam import PLAYER2
 import minimax
 import time
 import heapq
 
-SUCC_LIM=30 # On prend approximativement 1/3 des successeurs.
+SUCC_LIM =30 #Take approx. 1/3 of the successors
 
 class Agent(avalam.Agent, minimax.Game):
     """This is the skeleton of an agent to play the Avalam game."""
@@ -32,31 +31,47 @@ class Agent(avalam.Agent, minimax.Game):
         b is the new board after the action a has been played,
         p is the player to play the next move and st is the next
         step number."""
-
     def successors(self, state):
          # Un state s est  un triplet (b,p,st) où  b est un board, p est un player et st le nombre de pas.
         board, player, step_number = state
+        heap = []
+        i = 0
 
         # On récupère le prochain joueur
         next_player = player *(-1)
         my_successors=board.get_actions() # get_actions retourne les actions valides.
         for successor in my_successors:
             new_board=board.clone().play_action(successor)
-            yield (successor, (new_board, next_player, step_number+1))
+            i+=1
+            score = self.evaluate((new_board, next_player, step_number))
+            if(self.player == player): # if MAX
+                # heap sorts descending to ascending, so we invert the score
+                heapq.heappush(heap, (-score, (successor, (new_board, next_player, step_number+1))))
+            else: # if MIN
+                # heap sorts ascending to descending so we invert the score
+                heapq.heappush(heap, (score, (successor, (new_board, next_player, step_number+1))))
+        if i > SUCC_LIM:
+            i = SUCC_LIM
+
+        for x in range(i):
+            yield heapq.heappop(heap)[1] # yield value without the key
+
 
     """The cutoff function returns true if the alpha-beta/minimax
         search has to stop; false otherwise.
         """
-
     def cutoff(self, state, depth):
 
         board, player, step_number = state
-        return board.is_finished() or depth == 2
+
+        play_time = time.time() - self.start_time
+        if depth > 0 and self.step < 2:
+            return True
+        return play_time > (2.5*60) or board.is_finished() or depth == 2
 
     """The evaluate function must return an integer value
         representing the utility function of the board.
         """
-
     def evaluate(self, state):
 
      board, player,step_number = state
@@ -202,7 +217,9 @@ class Agent(avalam.Agent, minimax.Game):
         It must return an action representing the move the player
         will perform.
         """
-
+        self.player = player
+        self.step = step
+        self.start_time = time.time()
         newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
         return minimax.search(state, self)
