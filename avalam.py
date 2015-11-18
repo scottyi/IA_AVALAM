@@ -185,12 +185,14 @@ class Board:
 
         """
         score = 0
+
         for i in range(self.rows):
             for j in range(self.columns):
                 if self.m[i][j] < 0:
                     score -= 1
                 elif self.m[i][j] > 0:
                     score += 1
+
         if score == 0:
             for i in range(self.rows):
                 for j in range(self.columns):

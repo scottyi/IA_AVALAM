@@ -11,27 +11,22 @@ GROUPE 29
 '''
 
 import avalam
+from avalam import PLAYER2
 import minimax
 import time
 import heapq
-import random
 
-SUCC_LIM =30 #Take approx. 1/3 of the successors
+SUCC_LIM=30 # On prend approximativement 1/3 des successeurs.
 
 class Agent(avalam.Agent, minimax.Game):
-
     """This is the skeleton of an agent to play the Avalam game."""
 
-    def __init__(self, name="Agent"):
-        self.name = name # Le nom de l'agent
-        self.player = avalam.PLAYER2
-        self.start_time = time.time()
-        self.step = 0
-        self.max_depth = 2
-        self.time_slot = 0
-        self.time_left = 2.5*60
 
-    """The successors function must return (or yield) a list of”
+
+    def __init__(self,name="Agent"):
+         self.name=name # name est le nom de l'agent
+
+    """The successors function must return (or yield) a list of
         pairs (a, s) in which a is the action played to reach the
         state s; s is the new state, i.e. a triplet (b, p, st) where
         b is the new board after the action a has been played,
@@ -39,97 +34,100 @@ class Agent(avalam.Agent, minimax.Game):
         step number."""
 
     def successors(self, state):
-        """ Returns actions ordered by evaluation depending of MIN/MAX score to prune more with aplha beta
-            We Also leave only SUCC_LIM actions per depth
-        """
-
+         # Un state s est  un triplet (b,p,st) où  b est un board, p est un player et st le nombre de pas.
         board, player, step_number = state
-        heap = []
-        i = 0
 
+        # On récupère le prochain joueur
+        next_player = player *(-1)
         my_successors=board.get_actions() # get_actions retourne les actions valides.
-        next_player = player * (-1)
         for successor in my_successors:
             new_board=board.clone().play_action(successor)
-            i+=1
-            score = self.evaluate((new_board, next_player, step_number))
-            if(self.player == player): # if MAX
-                # heap sorts descending to ascending, so we invert the score
-                heapq.heappush(heap, (-score, (successor, (new_board, next_player, step_number+1))))
-            else: # if MIN
-                # heap sorts ascending to descending so we invert the score
-                heapq.heappush(heap, (score, (successor, (new_board, next_player, step_number+1))))
-        if i > SUCC_LIM:
-            i = SUCC_LIM
-
-        for x in range(i):
-            yield heapq.heappop(heap)[1] # yield value without the key
-
-
+            yield (successor, (new_board, next_player, step_number+1))
 
     """The cutoff function returns true if the alpha-beta/minimax
         search has to stop; false otherwise.
         """
 
     def cutoff(self, state, depth):
+
         board, player, step_number = state
-        play_time = time.time() - self.start_time
-        if depth > 0 and self.step < 2:
-            return True
-        return play_time == self.time_left or board.is_finished() or self.max_depth == depth
+        return board.is_finished() or depth == 2
 
     """The evaluate function must return an integer value
         representing the utility function of the board.
         """
+
     def evaluate(self, state):
 
-         board, player,step_number = state
+     board, player,step_number = state
+     score = board.get_score()
 
-         score = board.get_score()
-         old_score = score
+     # Do not evaluate this before step 2 because it won't happen
+     if step_number < 2:
+        return score
 
-         # Do not evaluate this before step 2 because it won't happen
-         if self.step < 2:
-            return score
+     for i, j, tower in board.get_towers():
+         if not board.is_tower_movable(i,j):
+            if tower < 0:
+                score -= 10
+            elif tower > 0 :
+                score += 10
+         else : #tower is movable
+            north = self.North(board, i, j)
+            east = self.East(board, i,j)
+            south = self.South(board, i,j)
+            west = self.West(board, i,j)
+            north_east = self.North_East(board, i, j)
+            north_west = self.North_West(board, i,j)
+            south_east = self.South_East(board, i,j)
+            south_west = self.South_West(board, i,j)
 
-         # If We have non moveable complete tower with player's color
-         # Increment score
-         #get all towers
-         for i,j,tower in board.get_towers():
-            #check if the towers is movable
-            if board.is_tower_movable(i,j):
-                #test if the tower is not surrounded by any chip
-                if board.abs(self.m[i][j]) == 1 and \
-                    self.check_right(board,i,j) == None and \
-                    self.check_left(board, i, j) == None and \
-                    self.check_up(board, i, j) == None and \
-                    self.check_down(board, i, j) == None :
-                        score+=1
+            if tower == 4 :
+                if (north != None and north == 1 and north < 0) or \
+                   (east != None and east == 1 and east < 0) or\
+                   (south != None and south == 1 and south < 0) or\
+                   (west != None and west == 1 and west < 0) or\
+                   (north_east != None and north_east == 1 and north_east < 0) or \
+                   (north_west != None and north_west == 1 and north_west < 0) or\
+                   (south_east != None and south_east == 1 and south_east < 0) or\
+                   (south_west != None and south_west == 1 and south_west < 0):
+                    score-=10
+                else :
+                    score+=10
 
-            else: #Tower is movable
-                """"if tower[4][1] == 1: #Tower can be reversed
-                    if tower[1][0] == 1: #Reversing tower will give us points and is the only possible move
-                        score+=4
-                    elif tower[1][0] == -1: #Reversing the tower will give points to the opponent
-                        score-=4"""
-         return score
+            if tower > 0 and tower < 5 :
+                if (north != None and (-north+tower) == 5 and north < 0) or \
+                   (east != None and (-east+tower) == 5 and east < 0) or\
+                   (south != None and (-south+tower) == 5 and south < 0) or\
+                   (west != None and (-west+tower) == 5 and west < 0) or\
+                   (north_east != None and (-north_east+tower) == 5 and north_east < 0) or \
+                   (north_west != None and (-north_west+tower) == 5 and north_west < 0) or\
+                   (south_east != None and (-south_east+tower) == 5 and south_east < 0) or\
+                   (south_west != None and (-south_west+tower) == 5 and south_west < 0):
+                    score-=tower
+                else :
+                    score+=10
 
+     if score == 0 :
+        for i, j, tower in board.get_towers():
+            if tower == -board.max_height:
+               score -= 1
+            elif tower == board.max_height:
+                  score += 1
 
-    def check_right(self,board, i,j):
-        """ Checks whether the right cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
+     return score
+
+    def North(self, board, i, j):
+        """ Get the north tile
+            Return None if no tile
         """
-        if j+1 < board.columns:
-            if board.abs(board.m[i][j+1]) == 0:
-                return None
-            else:
-                return True
+        if i > 0:
+            return board.m[i-1][j]
         else:
             return None
 
-    def left(self, board, i, j):
-        """ Get the left tile
+    def East(self, board, i, j):
+        """ Get the east tile
             Return None if no tile
         """
         if j+1 < board.columns:
@@ -137,21 +135,17 @@ class Agent(avalam.Agent, minimax.Game):
         else:
             return None
 
-    def check_left(self, board,i,j):
-        """ Checks whether the left cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
+    def South(self, board, i, j):
+        """ Get the south tile
+            Return None if no tile
         """
-        if j > 0:
-            if board.abs(board.m[i][j-1]) == 0:
-                return None
-            else:
-                return True
+        if i+1 < board.rows:
+            return board.m[i+1][j]
         else:
             return None
 
-    def right(self, board, i, j):
-        """ Get the right  tile
+    def West(self, board, i, j):
+        """ Get the west  tile
             Return None if no tile
         """
         if j > 0:
@@ -160,50 +154,41 @@ class Agent(avalam.Agent, minimax.Game):
             return None
 
 
-    def check_up(self, board,i, j):
-        """ Checks whether the upper cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
-        """
-        if i > 0:
-            if board.get_height(board.m[i-1][j]) == 0:
-                return None
-            else:
-                return True
-        else:
-            return None
-
-    def up(self, board, i, j):
-        """ Get the up tile
+    def North_East(self, board, i, j):
+        """ Get the north east tile
             Return None if no tile
         """
-        if i > 0:
-            return board.m[i-1][j]
+        if i > 0 and j+1 < board.columns :
+            return board.m[i-1][j+1]
         else:
             return None
 
-    def check_down(self, board,i, j):
-        """ Checks whether the down cell is empty of not
-            returns None if there are to tiles on the cell or if out of bounds
-            returns True if there is a tile on the cell
-        """
-        if i+1 < board.rows:
-            if board.get_height(board.m[i+1][j]) == 0:
-                return None
-            else:
-                return True
-        else:
-            return None
-
-    def down(self, board, i, j):
-        """ Get the down tile
+    def South_East(self, board, i, j):
+        """ Get the south east tile
             Return None if no tile
         """
-        if i+1 < board.rows:
-            return board.m[i+1][j]
+        if i+1 < board.rows and j+1 < board.columns :
+            return board.m[i+1][j+1]
         else:
             return None
 
+    def South_West(self, board, i, j):
+        """ Get south west tile
+            Return None if no tile
+        """
+        if i+1 < board.rows and j > 0 :
+            return board.m[i+1][j-1]
+        else:
+            return None
+
+    def North_West(self, board, i, j):
+        """ Get the North west tile
+            Return None if no tile
+        """
+        if i > 0 and j > 0 :
+            return board.m[i-1][j-1]
+        else:
+            return None
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
@@ -211,15 +196,8 @@ class Agent(avalam.Agent, minimax.Game):
         It must return an action representing the move the player
         will perform.
         """
-        if step % 2 == 0:
-            player = avalam.PLAYER2
-        else:
-            player = avalam.PLAYER1
 
-        self.step = step
-        self.time_left = time_left
-        self.start_time = time.time()
-        newBoard = avalam.Board(board.get_percepts(player))
+        newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
         return minimax.search(state, self)
 

@@ -18,7 +18,6 @@ class Agent(avalam.Agent, minimax.Game):
 
     def __init__(self, name="Agent"):
         self.name = name # Le nom de l'agent
-        self.player = avalam.PLAYER2
 
     """The successors function must return (or yield) a list of”
         pairs (a, s) in which a is the action played to reach the
@@ -62,13 +61,7 @@ class Agent(avalam.Agent, minimax.Game):
         will perform.
         """
 
-        if step % 2 == 0:
-            player = avalam.PLAYER2
-        else:
-            player = avalam.PLAYER1
-
-        self.time_left = time_left
-        newBoard = avalam.Board(board.get_percepts(player))
+        newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
         return minimax.search(state, self)
 
