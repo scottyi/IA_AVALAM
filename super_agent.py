@@ -60,6 +60,7 @@ class Agent(avalam.Agent, minimax.Game):
     def evaluate(self, state):
 
      board, player,step_number = state
+
      score = board.get_score()
 
      # Do not evaluate this before step 2 because it won't happen
@@ -126,18 +127,22 @@ class Agent(avalam.Agent, minimax.Game):
         else:
             return None
 
+
     def East(self, board, i, j):
         """ Get the east tile
             Return None if no tile
+
         """
         if j+1 < board.columns:
             return board.m[i][j+1]
         else:
             return None
 
+
     def South(self, board, i, j):
         """ Get the south tile
             Return None if no tile
+
         """
         if i+1 < board.rows:
             return board.m[i+1][j]
@@ -171,6 +176,7 @@ class Agent(avalam.Agent, minimax.Game):
             return board.m[i+1][j+1]
         else:
             return None
+
 
     def South_West(self, board, i, j):
         """ Get south west tile

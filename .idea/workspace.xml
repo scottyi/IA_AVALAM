@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="67eb47fa-68a3-496e-8f6c-7d1a9a2a40c6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/avalam.py" afterPath="$PROJECT_DIR$/avalam.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/basic_agent_1.py" afterPath="$PROJECT_DIR$/basic_agent_1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/basic_agent_2.py" afterPath="$PROJECT_DIR$/basic_agent_2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/super_agent.py" afterPath="$PROJECT_DIR$/super_agent.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="IA_AVALAM.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,8 +27,8 @@
       <file leaf-file-name="super_agent.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/super_agent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4">
-              <caret line="65" column="19" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="19" />
+            <state vertical-scroll-proportion="3.889655">
+              <caret line="188" column="0" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
               <folding>
                 <element signature="e#113#126#0" expanded="true" />
               </folding>
@@ -65,7 +62,7 @@
         <entry file="file://$PROJECT_DIR$/avalam.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-46.37037">
-              <caret line="84" column="8" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
+              <caret line="90" column="8" selection-start-line="90" selection-start-column="8" selection-end-line="90" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -492,7 +489,7 @@
     <entry file="file://$PROJECT_DIR$/avalam.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-46.37037">
-          <caret line="84" column="8" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
+          <caret line="90" column="8" selection-start-line="90" selection-start-column="8" selection-end-line="90" selection-end-column="8" />
           <folding />
         </state>
       </provider>
@@ -525,8 +522,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/super_agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4">
-          <caret line="65" column="19" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="19" />
+        <state vertical-scroll-proportion="3.889655">
+          <caret line="188" column="0" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
           <folding>
             <element signature="e#113#126#0" expanded="true" />
           </folding>
